@@ -1,8 +1,3 @@
-import orchestrator from '../../../common/orchestrator';
-
-beforeAll(async () => {
-	await orchestrator.waitForAllServices();
-});
 describe('/Status API', () => {
 	test('Should Return 200', async () => {
 		const response = await fetch('http://localhost:3000/api/v1/status');
@@ -12,7 +7,6 @@ describe('/Status API', () => {
 	test('Response data', async () => {
 		const response = await fetch('http://localhost:3000/api/v1/status');
 		const responseData = await response.json();
-		console.log(responseData);
 		expect(responseData.created_at).toBeDefined();
 		expect(responseData.message).toBe('SERVER_OK');
 		expect(responseData.database).toBeDefined();
