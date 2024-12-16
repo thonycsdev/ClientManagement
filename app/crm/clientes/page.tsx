@@ -1,6 +1,9 @@
 'use client';
-import { Paper } from '@mui/material';
+import { Container, Paper } from '@mui/material';
+import CreateNewClientButton from 'app/ui/button/createNewClientButton';
+import ModalCreateClient from 'app/ui/create-client/modal';
 import ClientTable from 'app/ui/table/client';
+import HeaderTable from 'app/ui/table/tableHeader';
 import keys from 'constants/keys';
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
@@ -28,6 +31,7 @@ async function fetcher(
 
 export default function Page() {
 	const [pagination, setPagination] = useState<Pagination>(defaultPagination);
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const { data, isLoading, mutate } = useSWR(keys.client.all, (key) =>
 		fetcher(key, pagination)
@@ -46,16 +50,19 @@ export default function Page() {
 		setPagination({ ...pagination, rowsPerPage: rowNumber });
 	};
 
+	const handleCreateClientModalInteraction = () => {
+		setIsModalOpen((old) => !old);
+	};
+
 	return (
-		<>
-			<Paper
-				sx={{
-					width: '80%',
-					margin: 'auto'
-				}}
-				variant="elevation"
-				elevation={5}
-			>
+		<Container sx={{ display: 'flex', flexDirection: 'column' }}>
+			<HeaderTable clientAmount={data.total} />
+			<CreateNewClientButton onClick={handleCreateClientModalInteraction} />
+			<ModalCreateClient
+				isOpen={isModalOpen}
+				onClose={handleCreateClientModalInteraction}
+			/>
+			<Paper variant="elevation" elevation={5}>
 				<ClientTable
 					clients={data.clientes}
 					amount={data.total}
@@ -64,6 +71,6 @@ export default function Page() {
 					onChangeRowsPerPage={handleChangeRowsPerPage}
 				/>
 			</Paper>
-		</>
+		</Container>
 	);
 }
